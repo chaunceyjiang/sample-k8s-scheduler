@@ -150,17 +150,29 @@ metadata:
   namespace: kube-system
 data:
   scheduler-config.yaml: |
-    apiVersion: kubescheduler.config.k8s.io/v1alpha1
+    apiVersion: kubescheduler.config.k8s.io/v1beta3
     kind: KubeSchedulerConfiguration
-    schedulerName: sample-scheduler
+    parallelism: 1
+    clientConnection:
+      kubeconfig:
+      acceptContentTypes: application/json
+      contentType: application/json
+      qps: 50
+      burst: 1000
     leaderElection:
       leaderElect: true
-      lockObjectName: sample-scheduler
-      lockObjectNamespace: kube-system
-    plugins:
-      preFilter:
-        enabled:
-        - name: "sample-plugin"
+      leaseDuration: 300
+      renewDeadline: 150
+      retryPeriod: 150
+      resourceLock: Object
+      resourceName: sample-scheduler
+      resourceNamespace: kube-system
+    profiles:
+      schedulerName: sample-scheduler
+      plugins:
+        preFilter:
+          enabled:
+          - name: "sample-plugin"
 ---
 apiVersion: apps/v1
 kind: Deployment
